@@ -11,8 +11,11 @@ const INSTANCES = [
 async function tryInstances(path) {
   const attempts = INSTANCES.map(base =>
     fetch(base + path, { signal: AbortSignal.timeout(8000) }).then(async res => {
-      if (!res.ok) throw new Error('http ' + res.status);
+      if (!res.ok) throw new Error(base + ' -> http ' + res.status);
       return res.json();
+    }).catch(err => {
+      console.log('fallo en', base, ':', err.message);
+      throw err;
     })
   );
   return Promise.any(attempts);
